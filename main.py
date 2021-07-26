@@ -1,4 +1,5 @@
 import os
+import shutil
 import subprocess
 import zipfile
 from glob import glob
@@ -54,8 +55,8 @@ def diff(base, head, func_name):
     base_dir = get_src_code(func_name, base, 'base')
     head_dir = get_src_code(func_name, head, 'head')
     subprocess.run(['git', 'diff', base_dir, head_dir])
-    os.rmdir(base_dir)
-    os.rmdir(head_dir)
+    shutil.rmtree(base_dir)
+    shutil.rmtree(head_dir)
 
 
 if __name__ == '__main__':

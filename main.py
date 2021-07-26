@@ -50,7 +50,7 @@ def get_src_code(func_name, version, base_or_head):
 def diff(base, head, func_name):
     '''
     Example:
-        $ python main.py execBBTOReportBatch --base 2 --head 3
+        $ python main.py lambdaFunctionName --base 2 --head 3
     '''
     base_dir = get_src_code(func_name, base, 'base')
     head_dir = get_src_code(func_name, head, 'head')

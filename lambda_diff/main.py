@@ -5,6 +5,7 @@ import zipfile
 
 import boto3
 import click
+import inquirer
 import requests
 
 client = boto3.client('lambda')
@@ -39,6 +40,25 @@ def get_src_code(func_name, version, dirname):
     unzip_file(filepath)
 
 
+def ask_version(func_name):
+    # get versions
+    resp = client.list_versions_by_function(FunctionName=func_name)
+    versions = [v['Version'] for v in resp['Versions']]
+
+    # get aliases
+    resp = client.list_aliases(FunctionName=func_name)
+    aliases = [a['Name'] for a in resp['Aliases']]
+    versions.extend(aliases)
+
+    # ask version to compare
+    questions = [
+        inquirer.List('base', message='Select base version', choices=versions),
+        inquirer.List('head', message='Select head version', choices=versions),
+    ]
+    answer = inquirer.prompt(questions)
+    return answer['base'], answer['head']
+
+
 @click.command()
 @click.argument('func_name')
 @click.option('-b', '--base', default='$LATEST', help='base version')
@@ -51,6 +71,10 @@ def diff(func_name, base, head, web, style):
     Example:
         $ python main.py lambdaFunctionName --base 2 --head 3
     '''
+
+    if base == head == '$LATEST':
+        base, head = ask_version(func_name)
+
     with tempfile.TemporaryDirectory() as tmpdir:
         base_dir = os.path.join(tmpdir, 'base')
         head_dir = os.path.join(tmpdir, 'head')

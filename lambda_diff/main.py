@@ -23,8 +23,6 @@ def unzip_file(filepath):
     '''
     Args:
         filepath: filepath of zipfile to extract
-    Returns:
-        path list of extracted files
     '''
     dirname = os.path.dirname(filepath)
     with zipfile.ZipFile(filepath, 'r') as zip_ref:

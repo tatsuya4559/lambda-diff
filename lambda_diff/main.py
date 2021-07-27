@@ -40,6 +40,13 @@ def get_src_code(func_name, version, dirname):
     unzip_file(filepath)
 
 
+def ask_function():
+    resp = client.list_functions()
+    function_names = [f['FunctionName'] for f in resp['Functions']]
+    answer = inquirer.prompt([inquirer.List('function', message='Select lambda function', choices=function_names)])
+    return answer['function']
+
+
 def ask_version(func_name):
     # get versions
     resp = client.list_versions_by_function(FunctionName=func_name)
@@ -60,7 +67,7 @@ def ask_version(func_name):
 
 
 @click.command()
-@click.argument('func_name')
+@click.argument('func_name', default='')
 @click.option('-b', '--base', default='$LATEST', help='base version')
 @click.option('-h', '--head', default='$LATEST', help='head version')
 @click.option('-w', '--web', default=False, is_flag=True, help='show diff in browser')
@@ -71,6 +78,9 @@ def diff(func_name, base, head, web, style):
     Example:
         $ ldiff lambdaFunctionName --base 2 --head 3
     '''
+
+    if func_name == '':
+        func_name = ask_function()
 
     if base == head == '$LATEST':
         base, head = ask_version(func_name)

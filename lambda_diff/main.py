@@ -69,7 +69,7 @@ def ask_version(func_name):
 def diff(func_name, base, head, web, style):
     '''
     Example:
-        $ python main.py lambdaFunctionName --base 2 --head 3
+        $ ldiff lambdaFunctionName --base 2 --head 3
     '''
 
     if base == head == '$LATEST':

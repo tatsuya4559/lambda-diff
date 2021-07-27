@@ -42,10 +42,13 @@ def get_src_code(func_name, version, dirname):
 
 
 @click.command()
-@click.option('--base', default='$LATEST', help='base version')
-@click.option('--head', default='$LATEST', help='head version')
 @click.argument('func_name')
-def diff(base, head, func_name):
+@click.option('-b', '--base', default='$LATEST', help='base version')
+@click.option('-h', '--head', default='$LATEST', help='head version')
+@click.option('-w', '--web', default=False, is_flag=True, help='show diff in browser')
+@click.option('-s', '--style', default='line', help='diff style',
+        type=click.Choice(['line', 'side'], case_sensitive=False))
+def diff(func_name, base, head, web, style):
     '''
     Example:
         $ python main.py lambdaFunctionName --base 2 --head 3
@@ -55,7 +58,14 @@ def diff(base, head, func_name):
         head_dir = os.path.join(tmpdir, 'head')
         get_src_code(func_name, base, base_dir)
         get_src_code(func_name, head, head_dir)
-        subprocess.run(['git', 'diff', base_dir, head_dir])
+
+        if web:
+            p1 = subprocess.Popen(['git', 'diff', base_dir, head_dir], stdout=subprocess.PIPE)
+            p2 = subprocess.Popen(['diff2html', '-i', 'stdin', '--style', style], stdin=p1.stdout)
+            p1.stdout.close()
+            p2.communicate()
+        else:
+            subprocess.run(['git', 'diff', base_dir, head_dir])
 
 
 if __name__ == '__main__':

@@ -70,10 +70,10 @@ def ask_version(func_name):
 @click.argument('func_name', default='')
 @click.option('-b', '--base', default='$LATEST', help='base version')
 @click.option('-h', '--head', default='$LATEST', help='head version')
-@click.option('-w', '--web', default=False, is_flag=True, help='show diff in browser')
+@click.option('-w', '--browser', default=False, is_flag=True, help='show diff in browser')
 @click.option('-s', '--style', default='line', help='diff style',
         type=click.Choice(['line', 'side'], case_sensitive=False))
-def diff(func_name, base, head, web, style):
+def diff(func_name, base, head, browser, style):
     '''
     Example:
         $ ldiff lambdaFunctionName --base 2 --head 3
@@ -91,7 +91,7 @@ def diff(func_name, base, head, web, style):
         get_src_code(func_name, base, base_dir)
         get_src_code(func_name, head, head_dir)
 
-        if web:
+        if browser:
             p1 = subprocess.Popen(['git', 'diff', base_dir, head_dir], stdout=subprocess.PIPE)
             p2 = subprocess.Popen(['diff2html', '-i', 'stdin', '--style', style], stdin=p1.stdout)
             p1.stdout.close()
